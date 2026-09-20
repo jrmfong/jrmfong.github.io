@@ -1,0 +1,63 @@
+---
+import { AUTHOR } from '../consts';
+
+const year = new Date().getFullYear();
+const links = [
+	{ href: AUTHOR.github, label: 'GitHub' },
+	AUTHOR.linkedin && { href: AUTHOR.linkedin, label: 'LinkedIn' },
+	AUTHOR.email && { href: `mailto:${AUTHOR.email}`, label: 'Email' },
+	{ href: '/rss.xml', label: 'RSS' },
+].filter(Boolean) as { href: string; label: string }[];
+---
+
+<footer>
+	<div class="inner">
+		<span>&copy; {year} {AUTHOR.name}</span>
+		<ul>
+			{
+				links.map(({ href, label }) => (
+					<li>
+						<a href={href} rel={href.startsWith('http') ? 'me noopener' : undefined}>
+							{label}
+						</a>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</footer>
+
+<style>
+	footer {
+		border-top: 1px solid var(--border);
+		color: var(--text-muted);
+		font-size: 0.9rem;
+	}
+	.inner {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 0.5rem 1.5rem;
+		max-width: var(--measure);
+		margin: 0 auto;
+		padding: 1.5rem 1.25rem 2.5rem;
+	}
+	ul {
+		display: flex;
+		gap: 1.1rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	li + li {
+		margin-top: 0;
+	}
+	a {
+		color: var(--text-muted);
+		text-decoration: none;
+	}
+	a:hover {
+		color: var(--accent);
+		text-decoration: underline;
+	}
+</style>

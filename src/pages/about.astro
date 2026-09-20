@@ -1,0 +1,24 @@
+---
+import Base from '../layouts/Base.astro';
+import { AUTHOR } from '../consts';
+---
+
+<Base title="About" description={`About ${AUTHOR.name} — ${AUTHOR.bio}`}>
+	<h1>About</h1>
+
+	<p>
+		I'm {AUTHOR.name}. I work on infrastructure and automation — the glue that keeps fleets of
+		machines, pipelines, and services running without anyone having to think about them.
+	</p>
+
+	<p>
+		This site is where I write up the problems I hit and how I solved them. Mostly for my own
+		future reference; useful to you, hopefully, if you hit the same thing.
+	</p>
+
+	<h2>Elsewhere</h2>
+	<ul>
+		<li><a href={AUTHOR.github} rel="me">GitHub</a></li>
+		<li><a href="/rss.xml">RSS feed</a></li>
+	</ul>
+</Base>

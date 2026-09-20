@@ -1,0 +1,24 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getTags, tagSlug } from '../../lib/posts';
+
+const tags = await getTags();
+---
+
+<Base title="Tags" description="Browse posts by topic.">
+	<h1>Tags</h1>
+	{
+		tags.length > 0 ? (
+			<ul>
+				{tags.map(({ tag, count }) => (
+					<li>
+						<a href={`/tags/${tagSlug(tag)}/`}>{tag}</a>
+						<span class="muted"> — {count}</span>
+					</li>
+				))}
+			</ul>
+		) : (
+			<p class="muted">No tags yet.</p>
+		)
+	}
+</Base>

@@ -1,0 +1,231 @@
+/*
+  One stylesheet for the whole site. Everything is driven by the custom
+  properties below — change those and the rest follows.
+*/
+
+:root {
+	--font-sans:
+		ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+	--font-mono:
+		ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+
+	--bg: #fdfdfc;
+	--bg-subtle: #f4f4f2;
+	--text: #1a1a18;
+	--text-muted: #6b6b66;
+	--border: #e2e2dd;
+	--accent: #8a4b2a;
+
+	--measure: 44rem;
+	--radius: 6px;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--bg: #131312;
+		--bg-subtle: #1d1d1b;
+		--text: #e8e8e4;
+		--text-muted: #9a9a93;
+		--border: #302f2c;
+		--accent: #d99a6c;
+	}
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	-webkit-text-size-adjust: 100%;
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+	margin: 0;
+	background: var(--bg);
+	color: var(--text);
+	font-family: var(--font-sans);
+	font-size: 1.0625rem;
+	line-height: 1.7;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+}
+
+main {
+	flex: 1;
+	width: 100%;
+	max-width: var(--measure);
+	margin: 0 auto;
+	padding: 3rem 1.25rem 4rem;
+}
+
+h1,
+h2,
+h3,
+h4 {
+	margin: 2.5rem 0 0.75rem;
+	font-weight: 650;
+	line-height: 1.25;
+	letter-spacing: -0.015em;
+	text-wrap: balance;
+}
+
+h1 {
+	margin-top: 0;
+	font-size: 1.9rem;
+}
+h2 {
+	font-size: 1.4rem;
+}
+h3 {
+	font-size: 1.15rem;
+}
+
+p,
+ul,
+ol,
+blockquote,
+pre,
+table {
+	margin: 0 0 1.25rem;
+}
+
+li + li {
+	margin-top: 0.35rem;
+}
+
+a {
+	color: var(--accent);
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.18em;
+}
+
+a:hover {
+	text-decoration-thickness: 2px;
+}
+
+strong {
+	font-weight: 650;
+}
+
+hr {
+	height: 1px;
+	margin: 2.5rem 0;
+	border: 0;
+	background: var(--border);
+}
+
+blockquote {
+	margin-left: 0;
+	padding-left: 1.1rem;
+	border-left: 3px solid var(--border);
+	color: var(--text-muted);
+}
+
+img,
+video {
+	max-width: 100%;
+	height: auto;
+	border-radius: var(--radius);
+}
+
+/* Code -------------------------------------------------------------- */
+
+code {
+	padding: 0.15em 0.35em;
+	border-radius: 4px;
+	background: var(--bg-subtle);
+	font-family: var(--font-mono);
+	font-size: 0.875em;
+}
+
+pre {
+	overflow-x: auto;
+	padding: 1rem 1.1rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	font-size: 0.875rem;
+	line-height: 1.6;
+}
+
+pre code {
+	padding: 0;
+	background: none;
+	font-size: inherit;
+}
+
+/* Shiki emits both themes; swap them with the OS preference. */
+@media (prefers-color-scheme: dark) {
+	.astro-code,
+	.astro-code span {
+		color: var(--shiki-dark) !important;
+		background-color: var(--shiki-dark-bg) !important;
+	}
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 0.95rem;
+}
+
+th,
+td {
+	padding: 0.5rem 0.6rem;
+	border-bottom: 1px solid var(--border);
+	text-align: left;
+}
+
+/* Shared bits -------------------------------------------------------- */
+
+.muted {
+	color: var(--text-muted);
+}
+
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 2px;
+	border-radius: 2px;
+}
+
+.tag {
+	display: inline-block;
+	padding: 0.1rem 0.5rem;
+	border: 1px solid var(--border);
+	border-radius: 999px;
+	color: var(--text-muted);
+	font-size: 0.78rem;
+	line-height: 1.6;
+	text-decoration: none;
+}
+
+.tag:hover {
+	border-color: var(--accent);
+	color: var(--accent);
+}
+
+@media (max-width: 640px) {
+	body {
+		font-size: 1rem;
+	}
+	main {
+		padding: 2rem 1.1rem 3rem;
+	}
+	h1 {
+		font-size: 1.6rem;
+	}
+}

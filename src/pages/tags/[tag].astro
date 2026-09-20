@@ -1,0 +1,48 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostList from '../../components/PostList.astro';
+import { getPosts, tagSlug, type Post } from '../../lib/posts';
+
+export async function getStaticPaths() {
+	const posts = await getPosts();
+	const byTag = new Map<string, { tag: string; posts: Post[] }>();
+
+	for (const post of posts) {
+		for (const tag of post.data.tags) {
+			const slug = tagSlug(tag);
+			if (!byTag.has(slug)) byTag.set(slug, { tag, posts: [] });
+			byTag.get(slug)!.posts.push(post);
+		}
+	}
+
+	return [...byTag.entries()].map(([slug, { tag, posts }]) => ({
+		params: { tag: slug },
+		props: { tag, posts },
+	}));
+}
+
+interface Props {
+	tag: string;
+	posts: Post[];
+}
+
+const { tag, posts } = Astro.props;
+---
+
+<Base
+	title={`Posts tagged “${tag}”`}
+	description={`Every post about ${tag} — ${posts.length} ${posts.length === 1 ? 'entry' : 'entries'}.`}
+>
+	<h1>{tag}</h1>
+	<p class="muted count">
+		{posts.length} {posts.length === 1 ? 'post' : 'posts'} · <a href="/tags/">all tags</a>
+	</p>
+	<PostList posts={posts} />
+</Base>
+
+<style>
+	.count {
+		margin-bottom: 2.5rem;
+		font-size: 0.9rem;
+	}
+</style>

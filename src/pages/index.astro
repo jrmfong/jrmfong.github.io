@@ -1,0 +1,42 @@
+---
+import Base from '../layouts/Base.astro';
+import PostList from '../components/PostList.astro';
+import { AUTHOR, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { getPosts } from '../lib/posts';
+
+const posts = await getPosts();
+const recent = posts.slice(0, 5);
+---
+
+<Base title={SITE_TITLE} description={SITE_DESCRIPTION}>
+	<h1>{AUTHOR.name}</h1>
+	<p class="intro">{AUTHOR.bio}</p>
+
+	<h2>Recent writing</h2>
+	{
+		recent.length > 0 ? (
+			<PostList posts={recent} />
+		) : (
+			<p class="muted">Nothing published yet — first post coming soon.</p>
+		)
+	}
+
+	{posts.length > recent.length && <p><a href="/blog/">All posts &rarr;</a></p>}
+</Base>
+
+<style>
+	.intro {
+		margin-bottom: 3rem;
+		font-size: 1.1rem;
+	}
+	h2 {
+		margin-bottom: 1.5rem;
+		padding-bottom: 0.5rem;
+		border-bottom: 1px solid var(--border);
+		font-size: 0.85rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--text-muted);
+	}
+</style>

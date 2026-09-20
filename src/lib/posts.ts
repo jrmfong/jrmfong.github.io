@@ -1,0 +1,31 @@
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+export type Post = CollectionEntry<'blog'>;
+
+/** Published posts, newest first. Drafts are dropped from production builds. */
+export async function getPosts(): Promise<Post[]> {
+	const posts = await getCollection('blog', ({ data }) => import.meta.env.DEV || !data.draft);
+	return posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+}
+
+export function postUrl(post: Post): string {
+	return `/blog/${post.id}/`;
+}
+
+/** Every tag in use, with its post count, ordered by count then name. */
+export async function getTags(): Promise<{ tag: string; count: number }[]> {
+	const counts = new Map<string, number>();
+	for (const post of await getPosts()) {
+		for (const tag of post.data.tags) {
+			counts.set(tag, (counts.get(tag) ?? 0) + 1);
+		}
+	}
+	return [...counts.entries()]
+		.map(([tag, count]) => ({ tag, count }))
+		.sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
+}
+
+/** Tags are lowercased and hyphenated for use in URLs. */
+export function tagSlug(tag: string): string {
+	return tag.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}

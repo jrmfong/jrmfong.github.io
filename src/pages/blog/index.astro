@@ -1,0 +1,47 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostList from '../../components/PostList.astro';
+import { getPosts, getTags, tagSlug } from '../../lib/posts';
+
+const posts = await getPosts();
+const tags = await getTags();
+---
+
+<Base
+	title="Writing"
+	description="Every post, newest first — infrastructure, automation, and developer tooling."
+>
+	<h1>Writing</h1>
+
+	{
+		tags.length > 0 && (
+			<p class="tags">
+				{tags.map(({ tag, count }) => (
+					<a class="tag" href={`/tags/${tagSlug(tag)}/`}>
+						{tag} <span class="count">{count}</span>
+					</a>
+				))}
+			</p>
+		)
+	}
+
+	{
+		posts.length > 0 ? (
+			<PostList posts={posts} />
+		) : (
+			<p class="muted">Nothing published yet.</p>
+		)
+	}
+</Base>
+
+<style>
+	.tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+		margin: 0 0 2.5rem;
+	}
+	.count {
+		opacity: 0.6;
+	}
+</style>
