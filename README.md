@@ -1,7 +1,16 @@
 # jrmfong.github.io
 
+Live at <https://jrmfong.github.io/>
+
 My personal technical blog. Static site built with [Astro](https://astro.build),
 deployed to GitHub Pages on every push to `main`.
+
+> **Note on Pages configuration:** this repo deploys via the Actions workflow in
+> `.github/workflows/deploy.yml`, *not* GitHub's built-in Jekyll builder. Pages
+> must stay set to "GitHub Actions" as its source (`build_type: workflow`). If
+> it ever reverts to branch-based deployment, the legacy Jekyll builder will run
+> and fail, because it reads the `---` fences in `.astro` files as YAML front
+> matter.
 
 ## Writing a post
 
