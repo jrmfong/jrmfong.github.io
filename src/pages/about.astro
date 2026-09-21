@@ -3,17 +3,26 @@ import Base from '../layouts/Base.astro';
 import { AUTHOR } from '../consts';
 ---
 
-<Base title="About" description={`About ${AUTHOR.name} — ${AUTHOR.bio}`}>
+<Base
+	title="About"
+	description="Biology and Computer Science teacher in Hong Kong, now an infrastructure engineer in Britain working on endpoint management, identity, security and automation."
+>
 	<h1>About</h1>
 
 	<p>
-		I'm {AUTHOR.name}. I work on infrastructure and automation — the glue that keeps fleets of
-		machines, pipelines, and services running without anyone having to think about them.
+		I'm {AUTHOR.name}. I taught Biology and Computer Science for some years in Hong Kong, before
+		changing career into IT here in Britain.
 	</p>
 
 	<p>
-		This site is where I write up the problems I hit and how I solved them. Mostly for my own
-		future reference; useful to you, hopefully, if you hit the same thing.
+		These days I'm the infrastructure guy, and enjoying it. I support modern workplace technologies
+		across endpoint management, identity and security — and, more importantly to me, the automation
+		that ties all of it together, mostly written in Bash and Python.
+	</p>
+
+	<p>
+		This site is where I write up the problems I hit and how I solved them. Mostly for my own future
+		reference; useful to you, hopefully, if you hit the same thing.
 	</p>
 
 	<h2>Elsewhere</h2>
