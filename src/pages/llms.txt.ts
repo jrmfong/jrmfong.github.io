@@ -12,27 +12,40 @@ import { getPosts } from '../lib/posts';
 export const GET: APIRoute = async () => {
 	const posts = await getPosts();
 
+	const intro = posts.length
+		? [
+				`Written by ${AUTHOR.name}. Every post below is also available as raw Markdown by`,
+				'appending `.md` to its URL. The full text of the whole site is at',
+				`${SITE_URL}/llms-full.txt.`,
+			]
+		: [`Written by ${AUTHOR.name}. No posts have been published yet.`];
+
+	const postSection = posts.length
+		? [
+				'## Posts',
+				'',
+				...posts.map(
+					(post) =>
+						`- [${post.data.title}](${SITE_URL}/blog/${post.id}.md): ${post.data.description}` +
+						` (published ${post.data.pubDate.toISOString().slice(0, 10)})`,
+				),
+				'',
+			]
+		: [];
+
 	const lines = [
 		`# ${SITE_TITLE}`,
 		'',
 		`> ${SITE_DESCRIPTION}`,
 		'',
-		`Written by ${AUTHOR.name}. Every post below is also available as raw Markdown by`,
-		'appending `.md` to its URL. The full text of the whole site is at',
-		`${SITE_URL}/llms-full.txt.`,
+		...intro,
 		'',
-		'## Posts',
-		'',
-		...posts.map(
-			(post) =>
-				`- [${post.data.title}](${SITE_URL}/blog/${post.id}.md): ${post.data.description}` +
-				` (published ${post.data.pubDate.toISOString().slice(0, 10)})`,
-		),
-		'',
+		...postSection,
 		'## Pages',
 		'',
 		`- [About](${SITE_URL}/about/): Who ${AUTHOR.name} is and what this site covers.`,
 		`- [Writing index](${SITE_URL}/blog/): Every post, newest first.`,
+		`- [Tags](${SITE_URL}/tags/): Posts grouped by topic.`,
 		`- [RSS feed](${SITE_URL}/rss.xml): Subscribe to new posts.`,
 		'',
 	];

@@ -16,6 +16,12 @@ export const GET: APIRoute = async () => {
 		'',
 	].join('\n');
 
+	if (!posts.length) {
+		return new Response(`${header}\nNo posts have been published yet.\n`, {
+			headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+		});
+	}
+
 	const body = posts
 		.map((post) =>
 			[
