@@ -20,7 +20,8 @@ available in Jamf.
 
 I used community recipes in the hope of borrowing someone else's effort and
 avoiding writing my own. I soon found that unavoidable. Those were the days
-without AI, but luckily there were plenty of examples to learn from. Writing
+without AI, but luckily there were plenty of examples to learn from. To name
+just a few: rtrouton, smithjw, homebysix, grahampugh, and it goes on. Writing
 recipes is a bit steep at the beginning, but it soon turns into a joyful
 experience, like picking the right block of Lego, the processor, to build a
 package and extract the version. Not to mention using Charles Proxy to reverse
