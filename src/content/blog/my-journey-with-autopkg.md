@@ -25,8 +25,7 @@ just a few: [rtrouton](https://github.com/autopkg/rtrouton-recipes),
 [smithjw](https://github.com/autopkg/smithjw-recipes),
 [homebysix](https://github.com/autopkg/homebysix-recipes),
 [grahampugh](https://github.com/autopkg/grahampugh-recipes), and it goes on.
-Writing
-recipes is a bit steep at the beginning, but it soon turns into a joyful
+Writing recipes is a bit steep at the beginning, but it soon turns into a joyful
 experience, like picking the right block of Lego, the processor, to build a
 package and extract the version. Not to mention using Charles Proxy to reverse
 engineer the source URL of an app.
