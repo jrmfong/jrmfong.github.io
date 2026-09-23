@@ -3,7 +3,6 @@ title: 'My Journey with AutoPkg'
 description: 'Five years with AutoPkg, from a Mac mini in a server room to ephemeral GitHub runners and cloud-autopkg-runner.'
 pubDate: 2026-09-23
 tags: ['autopkg', 'macos', 'jamf', 'github-actions']
-draft: true
 ---
 
 AutoPkg is widely used by Mac Admins to automate the packaging of all kinds of
@@ -15,7 +14,9 @@ AutoPkgr, which was the only GUI for interacting with the binary. It was
 scheduled to run every night, and it took some time before packages became
 available in Jamf.
 
-<!-- TODO: screenshot of AutoPkgr. Save it to src/assets/ and reference it here. -->
+![The AutoPkgr install tab, showing AutoPkg and Git installed, with tabs for repos and recipes, schedule, notifications and integrations](../../assets/autopkgr.png)
+
+*AutoPkgr. The Schedule tab is what ran the whole thing overnight.*
 
 I used community recipes in the hope of borrowing someone else's effort and
 avoiding writing my own. I soon found that unavoidable. Those were the days
