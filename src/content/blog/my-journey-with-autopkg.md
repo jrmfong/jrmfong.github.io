@@ -31,6 +31,10 @@ experience, like picking the right block of Lego, the processor, to build a
 package and extract the version. Not to mention using Charles Proxy to reverse
 engineer the source URL of an app.
 
+These days my own recipes are public as well, at
+[jrmfong-recipes](https://github.com/autopkg/jrmfong-recipes), so somebody else
+can borrow the effort in turn.
+
 The [AutoPkg processor reference](https://github.com/autopkg/autopkg/wiki/Processors-and-Variables)
 is a page I still visit frequently.
 
