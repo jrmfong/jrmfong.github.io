@@ -42,6 +42,11 @@ MacStadium. It did not really matter whether it had to build hundreds of apps,
 because the hosted service was already paid for at a flat rate. That Mac mini
 had served me very well.
 
+![An Intel Mac mini resting on top of a Pro-Ject Phono Box DS3 B phono
+preamplifier](../../assets/mac-mini.jpg)
+
+*The Intel Mac mini that ran every nightly build, retired to quieter duties.*
+
 ## Ephemeral runners
 
 After a short break from work, where I could catch up on new tech that might
