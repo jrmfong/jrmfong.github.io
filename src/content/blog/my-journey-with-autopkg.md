@@ -80,4 +80,4 @@ packaging takes a long time as the recipe list grows longer.
 you run recipes concurrently. Having benchmarked the GitHub macOS runner with
 various `CONCURRENCY` values, 4 seems to be the best I can get.
 
-Another big advantage is caching, which I will cover in the next post.
+Another big advantage is caching, which I will cover in the [next post] (https://jrmfong.github.io/blog/autopkg-optimise-for-cicd/).
