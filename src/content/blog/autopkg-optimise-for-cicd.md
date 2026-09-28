@@ -5,11 +5,9 @@ pubDate: 2026-09-29
 tags: ['autopkg', 'macos', 'jamf', 'github-actions', 'CICD']
 ---
 
-Caching update metadata reduced my AutoPkg run for 80 app titles from 84 minutes to 24 minutes.
-I combined this approach with `URLDownloaderPython` in GitHub Actions.
-
 My [previous post](https://jrmfong.github.io/blog/my-journey-with-autopkg/) covered the move to ephemeral runners.
 This post explains how I maintain recipes, check for updates and cache the metadata those checks need.
+
 
 ## Maintaining recipes
 
