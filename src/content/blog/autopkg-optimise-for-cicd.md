@@ -1,53 +1,108 @@
-# AutoPkg: Optimisation for CI/CD
+---
+title: 'Optimising AutoPkg for CI/CD'
+description: 'How caching update metadata and using URLDownloaderPython reduced my AutoPkg run for 80 app titles from 84 minutes to 24 minutes.'
+pubDate: 2026-09-29
+tags: ['autopkg', 'macos', 'jamf', 'github-actions']
+---
 
-As I mentioned in my [previous post](https://jrmfong.github.io/blog/my-journey-with-autopkg/), I’ll cover some of the challenges I encountered and how I found solutions.
+Caching update metadata reduced my AutoPkg run for 80 app titles from 84 minutes to 24 minutes.
+I combined this approach with `URLDownloaderPython` in GitHub Actions.
 
-## Challenge 1: Community recipes
+My [previous post](https://jrmfong.github.io/blog/my-journey-with-autopkg/) covered the move to ephemeral runners, which are temporary machines created for each run.
+This post explains how I maintain recipes, check for updates and cache the metadata those checks need.
 
-It’s great that so many recipes are readily available for a wide range of apps. However, vendors sometimes change a download URL, update a signing certificate (for example, after rebranding), or change the update format from a DMG to a PKG. Each of these changes can mean that a recipe needs to be updated or even rewritten.
+## Maintaining recipes
 
-We simply cannot expect any community maintainers to have an SLA for fixing recipes. With patching windows getting shorter, we can’t always wait for a community recipe to be updated. A private repository lets us maintain recipes to meet our own SLA, avoid duplicating existing recipes, and include settings that may involve sensitive security controls.
+Community recipes cover many apps, but vendor changes can break them.
+A vendor can change a download URL or signing certificate, or switch an installer from a DMG to a PKG.
+These changes can mean we need to update or rewrite a recipe.
 
-I also maintain a public AutoPkg recipe repository. To help the community, it may be worthwhile to setup a GitHub Actions workflow that regularly checks whether recipes are still valid.
+We cannot expect community maintainers to meet our service level agreement (SLA) for fixing recipes.
+With patching windows getting shorter, we cannot always wait for a community fix.
+A private repository lets us maintain recipes to meet our own deadlines and keep sensitive settings private.
+We can still reuse community recipes where they meet our needs.
 
-## Challenge 2: Checking for updates - the problem with `URLDownloader`
+I also maintain a public AutoPkg recipe repository.
+I could add a GitHub Actions workflow to check those recipes regularly and help others who use them.
 
-I initially thought I wouldn’t need to manage storage too much because the runner is ephemeral. But as the recipe list grows, reducing build time becomes more important. It helps avoid hitting the six-hour runtime limit, keeps costs down, and most importantly, gets updates to an MDM such as Jamf more quickly.
+## Checking for updates
 
-The first question is: how can we avoid downloading apps when no updates are available? Two processors we use often are `URLDownloader` and `URLDownloaderPython`.
+At first, I thought temporary runners would need little storage management.
+As the recipe list grew, reducing build time became more important.
+Shorter runs help avoid the six-hour runtime limit and keep costs down.
+They also get updates to a mobile device management (MDM) service such as Jamf more quickly.
 
-In AutoPkg 2.9.0, `URLDownloader` normally checks for changes as follows which is a simplified version
+Avoiding downloads of unchanged apps helps reduce that time.
+Two processors we often use for downloads are `URLDownloader` and `URLDownloaderPython`.
 
-1. It reads any saved `ETag` and `Last-Modified` values from the cached file’s extended attributes.
-2. It sends those values in a GET request as `If-None-Match` and `If-Modified-Since`, respectively.
-3. If the server returns `304 Not Modified`, AutoPkg sets `download_changed=False` and retains the cached file.
-4. If the server returns `200 OK`, curl downloads the response body. AutoPkg normally replaces the cached file and sets `download_changed=True`. However, 200 means the request succeeded—it does not itself establish that the content changed.
+### URLDownloader in AutoPkg 2.9.0
 
-A server that ignores conditional requests can consequently cause repeated downloads, even when its content is unchanged.
+This is a simplified description of how `URLDownloader` checks for changes in AutoPkg 2.9.0.
 
-`URLDownloaderPython` uses a different decision process:
+It reads saved `ETag` and `Last-Modified` values from the cached file's extended attributes.
+It sends these values in a GET request as `If-None-Match` and `If-Modified-Since`, respectively.
+These headers ask the server to send the file only if it has changed.
 
-1. It opens a GET request using Python’s `urllib.request.urlopen()` and inspects the response headers. It does not automatically send conditional headers derived from the previous download.
-2. It loads the previous metadata from `<pathname>.info.json`.
-3. If the cached file is missing, it decides a download is required.
-4. With the default settings, it compares `Content-Length`, `ETag`, and `Last-Modified` against the saved metadata. A difference triggers downloading. Missing metadata can prevent comparisons; if no comparisons succeed, it also downloads.
-5. If the comparisons indicate no change, it sets `download_changed=False` and returns before reading the response body in its download loop. Otherwise, it reads the body and normally replaces the cached file and updates the metadata.
+If the server returns `304 Not Modified`, AutoPkg sets `download_changed=False` and keeps the cached file.
+If the server returns `200 OK`, curl downloads the response body.
+AutoPkg normally replaces the cached file and sets `download_changed=True`.
+But a 200 response only means the request succeeded.
+It does not establish that the content changed.
 
-Both approaches depend on server-provided metadata. However, `URLDownloaderPython` can avoid consuming the full response body when a server ignores conditional requests but still supplies stable, useful response headers.
+A server that ignores conditional requests can cause repeated downloads, even when its content is unchanged.
 
-In my field experience, `URLDownloaderPython` delivers better results in update checking. Nevertheless, `URLDownloader` remains much more widely used: a scan of the official AutoPkg recipe index on 28 September 2026 found 4,837 recipes directly using `URLDownloader`, compared with just 96 using `URLDownloaderPython`.
+### URLDownloaderPython
 
-In AutoPkg 3.0 RC5, `URLDownloader` improves change detection by combining HTTP conditional GET requests with comparison of response headers against cached metadata in `<pathname>.info.json`. A 304 response indicates no change, while a 200 response can also be classified as unchanged when the metadata comparisons find no difference.
+`URLDownloaderPython` opens a GET request using Python's `urllib.request.urlopen()` and checks the response headers.
+It does not automatically send conditional headers based on the earlier download.
 
-## Challenge 3: Caching
+It loads the earlier metadata from `<pathname>.info.json`.
+If the cached file is missing, it decides a download is needed.
 
-In my workflow, I cache the metadata needed for update checks rather than every full installer. This keeps the cache small and reduces the amount of data and build time that needs to be restored to an ephemeral runner.
+With the default settings, it compares `Content-Length`, `ETag` and `Last-Modified` against the saved metadata.
+A difference triggers a download.
+Missing metadata can prevent comparisons.
+If no comparisons succeed, it also downloads the file.
 
-I used `actions/cache@v5` in GitHub Actions to save and restore this metadata. This includes the extended attributes used by `URLDownloader` and `.info.json` file used by `URLDownloaderPython`.
+If the comparisons show no change, it sets `download_changed=False`.
+It then returns before reading the response body in its download loop.
+Otherwise, it reads the body and normally replaces the cached file.
+It also updates the saved metadata.
 
-The CI workflow also creates nonempty placeholder files at the expected cache paths to satisfy the processors’ file presence checks.
+Both processors depend on metadata from the server.
+But `URLDownloaderPython` can avoid reading the full response body even when a server ignores conditional requests.
+The server must still supply stable, useful response headers for these comparisons.
 
-This workaround requires the workflow to skip later processing for unchanged apps, so that a placeholder is never treated as a real installer. This is where AutoPkg’s `--check` mode and `EndOfCheckPhase` come in: the check run stops at that marker, allowing the workflow to inspect `download_changed` and decide whether a full recipe run is necessary. Scott Blake explains this approach in [Unlocking AutoPkg’s Check Mode](https://macadminmusings.com/blog/2025/11/22/unlocking-autopkgs-check-mode/).
+In my experience, `URLDownloaderPython` gives better results when checking for updates.
+But `URLDownloader` remains much more widely used.
+A scan of the official AutoPkg recipe index on 28 September 2026 found 4,837 recipes directly using `URLDownloader`.
+Only 96 directly used `URLDownloaderPython`.
 
-While awaiting the stable release of AutoPkg 3.0, I’ve combined `URLDownloaderPython` with this caching approach to improve performance. In my environment, this reduced a full run for 80 app titles from 84 minutes to 24 minutes.
+### URLDownloader in AutoPkg 3.0 RC5
 
+In AutoPkg 3.0 RC5, `URLDownloader` combines conditional GET requests with checks against cached metadata.
+It compares response headers with the metadata in `<pathname>.info.json`.
+
+A 304 response shows no change.
+A 200 response can also count as unchanged when the metadata comparisons find no difference.
+
+## Caching update metadata
+
+My workflow caches the metadata needed for update checks instead of every full installer.
+This keeps the cache small and reduces the time needed to restore it to a temporary runner.
+
+I use `actions/cache@v5` in GitHub Actions to save and restore this metadata.
+It includes the extended attributes used by `URLDownloader` and the `.info.json` files used by `URLDownloaderPython`.
+
+The workflow must skip later processing for unchanged apps when using placeholder files.
+Otherwise, it could treat a placeholder as a real installer.
+
+The workflow creates nonempty placeholder files at the expected cache paths.
+These satisfy the processors' checks that cached files exist.
+
+AutoPkg's `--check` mode stops the check run at `EndOfCheckPhase`.
+The workflow then reads `download_changed` to decide whether it needs a full recipe run.
+Scott Blake explains this approach in [Unlocking AutoPkg's Check Mode](https://macadminmusings.com/blog/2025/11/22/unlocking-autopkgs-check-mode/).
+
+While waiting for the stable release of AutoPkg 3.0, I use `URLDownloaderPython` with this caching approach.
+In my environment, this reduced the run for 80 app titles from 84 minutes to 24 minutes.
