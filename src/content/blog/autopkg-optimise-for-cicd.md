@@ -23,6 +23,7 @@ We can still reuse community recipes where they meet our needs.
 I also maintain a public AutoPkg recipe repository. What I will do next is to create a GitHub Actions workflow
 to check those recipes regularly and help others who use them.
 
+
 ## Checking for updates
 
 At first, I thought temporary runners would need little storage management.
@@ -58,10 +59,8 @@ Both processors depend on metadata from the server. But `URLDownloaderPython` ca
 
 ### URLDownloader in AutoPkg 3.0 RC5
 
-In AutoPkg 3.0 RC5, `URLDownloader` combines conditional GET requests with checks against cached metadata.
-It compares response headers with the metadata in `<pathname>.info.json`.
+In AutoPkg 3.0 RC5, `URLDownloader` improves change detection by combining HTTP conditional GET requests with comparison of response headers against cached metadata in `<pathname>.info.json`. A `304` response indicates no change, while a `200` response can also be classified as unchanged when the metadata comparisons find no difference.
 
-A 304 response shows no change. A 200 response can also count as unchanged when the metadata comparisons find no difference.
 
 ## Caching update metadata
 
